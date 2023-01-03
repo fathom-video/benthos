@@ -351,8 +351,6 @@ func (k *kafkaWriter) WriteBatch(ctx context.Context, msg message.Batch) error {
 		return component.ErrNotConnected
 	}
 
-	boff := k.backoffCtor()
-
 	userDefinedHeaders := k.buildUserDefinedHeaders(k.staticHeaders)
 	msgs := []*sarama.ProducerMessage{}
 
