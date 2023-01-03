@@ -422,16 +422,6 @@ func (k *kafkaWriter) WriteBatch(ctx context.Context, msg message.Batch) error {
 			k.log.Errorf("Failed to send messages: %v\n", err)
 		}
 
-		tNext := boff.NextBackOff()
-		if tNext == backoff.Stop {
-			return err
-		}
-		select {
-		case <-ctx.Done():
-			return err
-		case <-time.After(tNext):
-		}
-
 		// Recheck connection is alive
 		k.connMut.RLock()
 		producer = k.producer
@@ -440,7 +430,7 @@ func (k *kafkaWriter) WriteBatch(ctx context.Context, msg message.Batch) error {
 		if producer == nil {
 			return component.ErrNotConnected
 		}
-		err = producer.SendMessages(msgs)
+		return err
 	}
 
 	return nil
